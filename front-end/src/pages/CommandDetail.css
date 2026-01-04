@@ -1,0 +1,158 @@
+.command-detail {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.command-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #ff6b1a;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.command-title-section h1 {
+  color: #333;
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.command-status-badge {
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.info-item.highlight {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+  border: 2px solid #ff6b1a;
+}
+
+.info-label {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.info-value.amount {
+  font-size: 2rem;
+  color: #ff6b1a;
+}
+
+.products-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #eee;
+}
+
+.products-section h3 {
+  color: #ff6b1a;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background: #f9f9f9;
+}
+
+.product-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.row-total {
+  font-weight: 600;
+  color: #ff6b1a;
+  font-size: 1.1rem;
+}
+
+.no-products {
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .command-title-section h1 {
+    font-size: 2rem;
+  }
+  
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .table-header div:not(:first-child),
+  .table-row div:not(:first-child) {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .table-header div:not(:first-child)::before,
+  .table-row div:not(:first-child)::before {
+    content: attr(data-label);
+    font-weight: 500;
+  }
+}
+
