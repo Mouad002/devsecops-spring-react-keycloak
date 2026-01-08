@@ -20,6 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()   // ZERO TRUST : tout est protégé
                 )
                 .oauth2ResourceServer(oauth2 ->

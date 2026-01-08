@@ -14,8 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - devsecops-project-net
+#    networks:
+#      - devsecops-project-net
 
   postgres-command:
     image: 'postgres:latest'
@@ -32,8 +32,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - devsecops-project-net
+#    networks:
+#      - devsecops-project-net
 
   pgadmin4-product:
     image: dpage/pgadmin4
@@ -45,8 +45,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - devsecops-project-net
+#    networks:
+#      - devsecops-project-net
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4.4
@@ -58,8 +58,8 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
       - keycloak_data:/opt/keycloak/data
-    networks:
-      - devsecops-project-net
+#    networks:
+#      - devsecops-project-net
 
   discovery-service:
     build: ./discovery-service
@@ -105,6 +105,8 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
+      retries: 5
+      start_period: 60s
     depends_on:
       discovery-service:
         condition: service_healthy
@@ -125,6 +127,8 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
+      retries: 5
+      start_period: 60s
     depends_on:
       discovery-service:
         condition: service_healthy
