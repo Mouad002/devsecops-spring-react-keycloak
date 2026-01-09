@@ -1,5 +1,5 @@
 // Centralized API endpoints configuration
-const API_BASE_URL = 'http://localhost:8888'; // Change this to your backend URL
+const API_BASE_URL = import.meta.env.VITE_API_URL; // Change this to your backend URL
 
 export const API_ENDPOINTS = {
   // Products endpoints

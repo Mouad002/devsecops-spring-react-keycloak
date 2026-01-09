@@ -1,6 +1,7 @@
 services:
   postgres-product:
     image: 'postgres:latest'
+    container_name: postgres-product
     environment:
       - 'POSTGRES_DB=products_db'
       - 'POSTGRES_PASSWORD=123456'
@@ -19,6 +20,7 @@ services:
 
   postgres-command:
     image: 'postgres:latest'
+    container_name: postgres-command
     environment:
       - 'POSTGRES_DB=commands_db'
       - 'POSTGRES_PASSWORD=123456'
@@ -35,8 +37,9 @@ services:
 #    networks:
 #      - devsecops-project-net
 
-  pgadmin4-product:
+  pgadmin4:
     image: dpage/pgadmin4
+    container_name: pgadmin4
     restart: always
     ports:
       - "8088:80"
@@ -50,6 +53,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4.4
+    container_name: keycloak
     command: start-dev
     ports:
       - "8080:8080"
@@ -136,6 +140,19 @@ services:
         condition: service_healthy
       postgres-command:
         condition: service_healthy
+
+  front-end:
+    build:
+      context: ./front-end
+      args:
+        VITE_KEYCLOAK_URL: http://localhost:8080
+        VITE_API_URL: http://localhost:8888
+    container_name: front-end
+    ports:
+      - "5173:80"
+    depends_on:
+      keycloak:
+        condition: service_started
 
 volumes:
   products_data:
