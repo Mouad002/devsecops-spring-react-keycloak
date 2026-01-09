@@ -87,7 +87,8 @@ services:
       - "8888"
     environment:
       DISCOVERY_SERVICE_URL: http://discovery-service:8761/eureka
-      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+#      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+      JWK_URI: http://keycloak:8080/realms/devsecops-realm/protocol/openid-connect/certs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
       interval: 10s
@@ -105,7 +106,8 @@ services:
     environment:
       DISCOVERY_SERVICE_URL: http://discovery-service:8761/eureka
       DB_URL: jdbc:postgresql://postgres-product:5432/products_db
-      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+#      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+      JWK_URI: http://keycloak:8080/realms/devsecops-realm/protocol/openid-connect/certs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
@@ -127,7 +129,8 @@ services:
     environment:
       DISCOVERY_SERVICE_URL: http://discovery-service:8761/eureka
       DB_URL: jdbc:postgresql://postgres-command:5432/commands_db
-      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+#      AUTH_SERVER: http://keycloak:8080/realms/devsecops-realm
+      JWK_URI: http://keycloak:8080/realms/devsecops-realm/protocol/openid-connect/certs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
