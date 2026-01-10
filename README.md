@@ -251,3 +251,117 @@ sonar.exclusions=**/node_modules/**
 - run `sonar-scanner`
 
 ![](sonar-img/sonar_front_end.png)
+
+## Trivy (vulnerabilities scanning)
+
+- We build our images with `docker compose build`
+- We get the following images names
+
+```
+REPOSITORY                                        TAG         IMAGE ID       CREATED          SIZE
+devsecops-project-command-service                 latest      0e2d200b4d3d   57 minutes ago   1.3GB
+devsecops-project-product-service                 latest      5adbc164beec   57 minutes ago   1.29GB
+devsecops-project-gateway-service                 latest      b910f1fdfaad   57 minutes ago   1.26GB
+devsecops-project-discovery-service               latest      da6be6fc818f   57 minutes ago   1.24GB
+devsecops-project-front-end                       latest      148ea4e3a0aa   25 hours ago     80.2MB
+```
+
+- Then we run trivy command to scan for vulnerabilities for each service.
+- The following example is of discovery service
+
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --timeout 15m devsecops-project-discovery-service
+```
+
+- and we got as a result
+
+```
+25ZINFO    [javadb] Artifact successfully downloaded       repo="mirror.gcr.io/aquasec/trivy-java-db:1"
+2026-01-10T18:08:25Z    INFO    [javadb] Java DB is cached for 3 days. If you want to update the database more frequently, "trivy clean --java-db" command clears the DB cache.
+2026-01-10T18:08:31Z    INFO    Detected OS     family="ubuntu" version="24.04"
+2026-01-10T18:08:31Z    INFO    [ubuntu] Detecting vulnerabilities...   os_version="24.04" pkg_num=253
+2026-01-10T18:08:31Z    INFO    Number of language-specific files       num=1
+2026-01-10T18:08:31Z    INFO    [jar] Detecting vulnerabilities...
+2026-01-10T18:08:31Z    INFO    Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+
+Report Summary
+
+┌────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                       Target                       │  Type  │ Vulnerabilities │ Secrets │
+├────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ devsecops-project-discovery-service (ubuntu 24.04) │ ubuntu │       208       │    -    │
+├────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ app.jar                                            │  jar   │        3        │    -    │
+└────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+devsecops-project-discovery-service (ubuntu 24.04)
+==================================================
+Total: 208 (UNKNOWN: 0, LOW: 59, MEDIUM: 147, HIGH: 2, CRITICAL: 0)
+```
+
+- and a very long table of the vulnerabilities, but here is a chunk of it
+
+```
+┌─────────────────────────┬────────────────┬──────────┬──────────┬─────────────────────────────┬───────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│         Library         │ Vulnerability  │ Severity │  Status  │      Installed Version      │         Fixed Version         │                            Title                             │
+├─────────────────────────┼────────────────┼──────────┼──────────┼─────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ coreutils               │ CVE-2016-2781  │ LOW      │ affected │ 9.4-3ubuntu6                │                               │ coreutils: Non-privileged session can escape to the parent   │
+│                         │                │          │          │                             │                               │ session in chroot                                            │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2016-2781                    │
+├─────────────────────────┼────────────────┤          │          ├─────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ curl                    │ CVE-2025-0167  │          │          │ 8.5.0-2ubuntu10.6           │                               │ When asked to use a `.netrc` file for credentials **and** to │
+│                         │                │          │          │                             │                               │ follow...                                                    │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-0167                    │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-10148 │          │          │                             │                               │ curl: predictable WebSocket mask                             │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-10148                   │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-14524 │          │          │                             │                               │ When an OAuth2 bearer token is used for an HTTP(S) transfer, │
+│                         │                │          │          │                             │                               │ and...                                                       │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-14524                   │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-14819 │          │          │                             │                               │ When doing TLS related transfers with reused easy or multi   │
+│                         │                │          │          │                             │                               │ handles and...                                               │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-14819                   │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-15079 │          │          │                             │                               │ When doing SSH-based transfers using either SCP or SFTP, and │
+│                         │                │          │          │                             │                               │ setting t...                                                 │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-15079                   │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-15224 │          │          │                             │                               │ When doing SSH-based transfers using either SCP or SFTP, and │
+│                         │                │          │          │                             │                               │ asked to...                                                  │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-15224                   │
+│                         ├────────────────┤          │          │                             ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                         │ CVE-2025-9086  │          │          │                             │                               │ curl: libcurl: Curl out of bounds read for cookie path       │
+│                         │                │          │          │                             │                               │ https://avd.aquasec.com/nvd/cve-2025-9086                    │
+├─────────────────────────┼────────────────┤          ├──────────┼─────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────
+```
+
+- and finally app.jar vulnerabilities
+
+```
+Java (jar)
+==========
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+
+┌───────────────────────────────────────────────────────┬────────────────┬──────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│                        Library                        │ Vulnerability  │ Severity │  Status  │ Installed Version │ Fixed Version │                            Title                             │
+├───────────────────────────────────────────────────────┼────────────────┼──────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ commons-configuration:commons-configuration (app.jar) │ CVE-2025-46392 │ LOW      │ affected │ 1.10              │               │ apache-commons-configuration: Apache Commons Configuration:  │
+│                                                       │                │          │          │                   │               │ Uncontrolled Resource Consumption when loading untrusted     │
+│                                                       │                │          │          │                   │               │ configurations in...                                         │
+│                                                       │                │          │          │                   │               │ https://avd.aquasec.com/nvd/cve-2025-46392                   │
+├───────────────────────────────────────────────────────┼────────────────┼──────────┤          ├───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ commons-lang:commons-lang (app.jar)                   │ CVE-2025-48924 │ MEDIUM   │          │ 2.6               │               │ commons-lang/commons-lang: org.apache.commons/commons-lang3: │
+│                                                       │                │          │          │                   │               │ Uncontrolled Recursion vulnerability in Apache Commons Lang  │
+│                                                       │                │          │          │                   │               │ https://avd.aquasec.com/nvd/cve-2025-48924                   │
+├───────────────────────────────────────────────────────┼────────────────┤          ├──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ org.apache.httpcomponents:httpclient (app.jar)        │ CVE-2020-13956 │          │ fixed    │ 4.5.3             │ 4.5.13, 5.0.3 │ apache-httpclient: incorrect handling of malformed authority │
+│                                                       │                │          │          │                   │               │ component in request URIs                                    │
+│                                                       │                │          │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-13956                   │
+└───────────────────────────────────────────────────────┴────────────────┴──────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+```
