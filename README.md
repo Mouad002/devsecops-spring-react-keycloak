@@ -145,3 +145,109 @@ front-end:
 
 #### ADMIN & CLIENT
 ![](img/img_6.png)
+
+# Devsecops
+
+## SonarQube
+
+- We run sonarqube in our docker compose file, with some custom volume and a postgres database with its own volume
+- Sonarqube container
+```yml
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    depends_on:
+      - postgres-sonar
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres-sonar:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+```
+- postgres container
+```yml
+  postgres-sonar:
+    image: postgres:15
+    container_name: postgres-sonar
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonarqube
+    volumes:
+      - sonar_pg_data:/var/lib/postgresql/data 
+```
+
+### Backend (Microservice)
+
+- First we open sonarqube in `localhost:9000` we login with `admin` `admin` and create projects for each service (discovery, gateway, product and command)
+- let's take product service for example
+- We create the project
+
+![](sonar-img/sonar_create_project.png)
+
+- We can choose some customizations setup code
+
+![](sonar-img/sonar_setup_code.png)
+
+- For the analysis method we chose locally
+
+![](sonar-img/sonar_analysis_method.png)
+
+- We generate a token to run sonarqube check later
+
+![](sonar-img/sonar_token.png)
+
+- We get finally the command
+
+![](sonar-img/sonar_command.png)
+
+- Then for each service we run the command to start the process
+
+Here the result for all the services :
+#### discovery service
+
+![](sonar-img/sonar_discovery_service.png)
+
+#### gateway service
+
+![](sonar-img/sonar_gateway_service.png)
+
+#### product service
+
+![](sonar-img/sonar_product_service.png)
+
+- we can inspect on details the issues with a level (HIGH, MEDIUM, LOW)
+
+![](sonar-img/sonar_product_service_issues.png)
+
+- we can inspect the place of the issue
+
+![](sonar-img/sonar_product_service_issues_1.png)
+
+#### command service/
+
+![](sonar-img/sonar_command_service.png)
+
+### Frontend
+
+The front end process is different a little bit, here we have to:
+- install sonar package with `npm install -g sonarqube-scanner`
+- create a file in the frontend directory `sonar-project.properties`
+```properties
+sonar.projectKey=front-end
+sonar.sources=src
+sonar.host.url=http://localhost:9000
+sonar.login=SONARQUBE_TOKEN
+sonar.exclusions=**/node_modules/**
+```
+- run `sonar-scanner`
+
+![](sonar-img/sonar_front_end.png)
